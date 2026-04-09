@@ -54,7 +54,16 @@ Run the Flask application:
 python app.py
 ```
 
-Open the app at `http://localhost:8080`.
+On Windows, the easiest local start command is:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\run_local.ps1
+```
+
+Then open:
+
+- `http://127.0.0.1:8080` on the same system
+- `http://<your-local-ip>:8080` from another device on the same Wi-Fi if Windows Firewall allows port `8080`
 
 ## DVC Commands
 
@@ -129,11 +138,35 @@ The final project was tested locally after the last training run:
 - `/predict` successfully classified a real sample CT image as `Normal`
 - Sample prediction confidence during smoke test: `65.29%`
 
+## How To Test With Your Own Image
+
+You can test in two ways.
+
+Using the UI:
+
+1. Start the app with `powershell -ExecutionPolicy Bypass -File .\run_local.ps1`
+2. Open `http://127.0.0.1:8080`
+3. Upload a PNG, JPG, or JPEG CT image
+4. Click `Analyze CT Scan`
+
+Using the API test script:
+
+```bash
+.conda\python.exe test_api.py --image "artifacts\data_ingestion\Chest-CT-Scan-data\normal\7.png"
+```
+
+You can also target another running instance:
+
+```bash
+.conda\python.exe test_api.py --url "http://127.0.0.1:8080" --image "path\to\your\image.png"
+```
+
 ## Deployment Notes
 
 - The deployable inference assets are copied to `model/model.h5` and `model/class_indices.json`
 - Hosted environments are configured for inference only; the `/train` route is kept for local use
 - A valid Vercel login or token is still required to run `vercel deploy` from the terminal
+- As of April 9, 2026, there is no successful Vercel deployment URL yet from this workspace, so there is nothing live to open on another device right now
 
 Important compatibility note:
 
