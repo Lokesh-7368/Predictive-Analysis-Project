@@ -1,6 +1,6 @@
 # Predictive Analysis Project
 
-An end-to-end chest CT scan image classification project built in the same overall workflow style as `entbappy/Chest-Disease-Classification-from-Chest-CT-Scan-Image`, while intentionally excluding Docker and using a completely different interactive UI.
+A fully self-developed end-to-end Chest CT Scan Image Classification system built using deep learning and MLOps practices. This project implements a complete pipeline—from data ingestion to model deployment—and provides a custom Flask-based web interface for real-time predictions.
 
 ## Repository
 
