@@ -1,0 +1,54 @@
+{
+    "selected_version": "version_4",
+    "selected_reason": "Selected as the final exam-ready deployment model because it keeps AUGMENTATION=True as requested and still reaches 1.0 validation accuracy.",
+    "experiments": [
+        {
+            "version": "version_1",
+            "params": {
+                "AUGMENTATION": true,
+                "EPOCHS": 2,
+                "LEARNING_RATE": 0.01
+            },
+            "scores": {
+                "loss": 6.084355354309082,
+                "accuracy": 0.4264705777168274
+            }
+        },
+        {
+            "version": "version_2",
+            "params": {
+                "AUGMENTATION": true,
+                "EPOCHS": 3,
+                "LEARNING_RATE": 0.001
+            },
+            "scores": {
+                "loss": 1.0338488817214966,
+                "accuracy": 0.44117647409439087
+            }
+        },
+        {
+            "version": "version_3",
+            "params": {
+                "AUGMENTATION": false,
+                "EPOCHS": 4,
+                "LEARNING_RATE": 0.0005
+            },
+            "scores": {
+                "loss": 0.1915959268808365,
+                "accuracy": 1.0
+            }
+        },
+        {
+            "version": "version_4",
+            "params": {
+                "AUGMENTATION": true,
+                "EPOCHS": 6,
+                "LEARNING_RATE": 0.0003
+            },
+            "scores": {
+                "loss": 0.30004334449768066,
+                "accuracy": 1.0
+            }
+        }
+    ]
+}

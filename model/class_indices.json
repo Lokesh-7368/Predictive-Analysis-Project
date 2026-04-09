@@ -1,0 +1,10 @@
+{
+    "class_indices": {
+        "adenocarcinoma": 0,
+        "normal": 1
+    },
+    "index_to_class": {
+        "0": "adenocarcinoma",
+        "1": "normal"
+    }
+}

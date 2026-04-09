@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predictive Analysis Project</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+    <div class="ambient ambient-three"></div>
+
+    <div class="page-shell">
+        <header class="hero">
+            <div class="hero-copy">
+                <p class="eyebrow">End-Term Practical Project</p>
+                <h1>Predictive Analysis Project</h1>
+                <p class="hero-text">
+                    Chest CT scan classification built with data ingestion, transfer learning,
+                    DVC orchestration, and MLflow experiment tracking.
+                </p>
+
+                <div class="chip-row">
+                    <span class="chip">Flask API</span>
+                    <span class="chip">DVC Pipeline</span>
+                    <span class="chip">VGG16 Transfer Learning</span>
+                    <span class="chip">MLflow: {{ tracking_uri }}</span>
+                </div>
+            </div>
+
+            <div class="glass hero-panel">
+                <p class="panel-label">Pipeline Stages</p>
+                <div class="stage-grid">
+                    <article class="stage-card">
+                        <span class="stage-number">01</span>
+                        <h3>Data Ingestion</h3>
+                        <p>Downloads and extracts the Google Drive dataset into the artifacts folder.</p>
+                    </article>
+                    <article class="stage-card">
+                        <span class="stage-number">02</span>
+                        <h3>Prepare Base Model</h3>
+                        <p>Builds a VGG16 backbone and adapts it for two-class chest CT classification.</p>
+                    </article>
+                    <article class="stage-card">
+                        <span class="stage-number">03</span>
+                        <h3>Model Training</h3>
+                        <p>Runs augmentation, training, and saves both the model and class-index mapping.</p>
+                    </article>
+                    <article class="stage-card">
+                        <span class="stage-number">04</span>
+                        <h3>Evaluation + MLflow</h3>
+                        <p>Measures validation accuracy and logs model artifacts and metrics to MLflow.</p>
+                    </article>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard">
+            <section class="glass upload-panel">
+                <div class="section-head">
+                    <div>
+                        <p class="panel-label">Interactive Inference</p>
+                        <h2>Upload A CT Scan</h2>
+                    </div>
+                    <button
+                        id="train-button"
+                        class="ghost-button"
+                        {% if not training_enabled %}disabled data-training-enabled="false"{% else %}data-training-enabled="true"{% endif %}
+                    >
+                        {% if training_enabled %}Run Full Pipeline{% else %}Training Available Locally{% endif %}
+                    </button>
+                </div>
+
+                <div class="workspace">
+                    <label id="dropzone" class="dropzone" for="file-input">
+                        <input id="file-input" type="file" accept="image/*" hidden>
+                        <span class="dropzone-kicker">Drop image here</span>
+                        <strong>Choose or drag a chest CT image</strong>
+                        <span class="dropzone-note">PNG, JPG, or JPEG. The model resizes to 224 x 224.</span>
+                    </label>
+
+                    <div class="preview-card">
+                        <div class="preview-frame">
+                            <img id="preview-image" alt="CT scan preview">
+                            <div id="preview-placeholder" class="preview-placeholder">
+                                <span>Preview will appear here</span>
+                            </div>
+                        </div>
+                        <div class="preview-meta">
+                            <p class="panel-label">Selected File</p>
+                            <h3 id="file-name">No image selected yet</h3>
+                            <p id="file-size">Pick a CT scan to begin the prediction workflow.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="action-row">
+                    <button id="browse-button" class="secondary-button">Choose Scan</button>
+                    <button id="predict-button" class="primary-button" disabled>Analyze CT Scan</button>
+                </div>
+
+                <div class="console-panel">
+                    <div class="console-head">
+                        <p class="panel-label">Training Console</p>
+                        <span id="console-status" class="console-status idle">Idle</span>
+                    </div>
+                    {% if not training_enabled %}
+                        <p class="console-note">This deployment is configured for prediction only. Run the DVC pipeline locally to retrain the model.</p>
+                    {% endif %}
+                    <pre id="training-console" class="console-output">Training logs will appear here when you run the full pipeline.</pre>
+                </div>
+            </section>
+
+            <aside class="glass result-panel">
+                <div class="section-head">
+                    <div>
+                        <p class="panel-label">Prediction Output</p>
+                        <h2>Diagnosis Summary</h2>
+                    </div>
+                </div>
+
+                <div id="empty-state" class="empty-state">
+                    <p>Upload a CT scan and click <strong>Analyze CT Scan</strong> to see the predicted class, confidence score, and probability breakdown.</p>
+                </div>
+
+                <div id="result-state" class="result-state" hidden>
+                    <span id="result-label" class="result-label">Waiting...</span>
+                    <div id="confidence-ring" class="confidence-ring" style="--confidence: 0%;">
+                        <div class="confidence-ring-inner">
+                            <span id="confidence-value">0%</span>
+                            <small>confidence</small>
+                        </div>
+                    </div>
+                    <p id="result-description" class="result-description"></p>
+
+                    <div class="probability-panel">
+                        <p class="panel-label">Class Probabilities</p>
+                        <div id="probability-list" class="probability-list"></div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+
+        <section class="meta-grid">
+            <article class="glass meta-card">
+                <p class="panel-label">Dataset Snapshot</p>
+                <h2>Detected Classes</h2>
+                {% if dataset_summary %}
+                    <div class="dataset-list">
+                        {% for item in dataset_summary %}
+                            <div class="dataset-row">
+                                <span>{{ item.label }}</span>
+                                <strong>{{ item.count }} images</strong>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="muted-copy">The dataset summary will appear here after the ingestion step populates the artifacts folder.</p>
+                {% endif %}
+            </article>
+
+            <article class="glass meta-card">
+                <p class="panel-label">Experiment Tracking</p>
+                <h2>MLflow Ready</h2>
+                <p class="muted-copy">
+                    Evaluation logs to <code>{{ tracking_uri }}</code>. You can also set
+                    <code>MLFLOW_TRACKING_USERNAME</code> and <code>MLFLOW_TRACKING_PASSWORD</code>
+                    if you want to connect this project to a remote MLflow server.
+                </p>
+            </article>
+        </section>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

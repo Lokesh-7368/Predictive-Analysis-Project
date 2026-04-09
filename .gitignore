@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.pyc.*
+*.egg-info/
+.vscode/
+.ipynb_checkpoints/
+.conda/
+.venv/
+venv/
+env/
+.env
+.env.*
+mlruns/
+logs/
+artifacts/prediction/
+app_test_*.log
