@@ -161,18 +161,6 @@ You can also target another running instance:
 .conda\python.exe test_api.py --url "http://127.0.0.1:8080" --image "path\to\your\image.png"
 ```
 
-## Deployment Notes
-
-- The deployable inference assets are copied to `model/model.h5` and `model/class_indices.json`
-- Hosted environments are configured for inference only; the `/train` route is kept for local use
-- A valid Vercel login or token is still required to run `vercel deploy` from the terminal
-- As of April 9, 2026, there is no successful Vercel deployment URL yet from this workspace, so there is nothing live to open on another device right now
-
-Important compatibility note:
-
-- Vercel currently supports Python `3.12`, `3.13`, and `3.14` for Python deployments
-- This project keeps the reference stack with `tensorflow==2.12.0`, which is tied to the Python 3.8-era setup used locally for the exam
-- Because of that version mismatch, an exact-stack Vercel deployment needs either a runtime change or a different hosting target for the inference backend
 
 ## Research Notebooks
 
